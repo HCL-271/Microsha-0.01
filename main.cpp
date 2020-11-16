@@ -108,7 +108,7 @@ long tv_usec; microseconds  */
 */
         return err;
     }
- int sh_cd(vector<string> & comm) { \\переход по директории(папке)
+ int sh_cd(vector<string> & comm) { /* переход по директории(папке) */
         if(comm.size() > 2) {
             perror("cd: to many arguments");
             return 1;
