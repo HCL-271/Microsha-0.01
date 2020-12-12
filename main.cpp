@@ -128,8 +128,8 @@ long tv_usec; microseconds  */
     }
 
     int execCommand(vector<string> & comm, int in, int out, int convSize, int * fd) {
-        if(comm[0] == "cd" && convSize == 2) sh_cd(comm);
-        pid_t pid = fork(); 
+        if(comm[0] == "cd" && convSize == 2) sh_cd(comm); /* Переход по строке по cd */
+        pid_t pid = fork(); /* Порождаем процесс */
         if(pid == 0) {
             char ** args = new char *[comm.size() + 1];
             for(int i = 0; i < comm.size(); i++)
@@ -144,7 +144,17 @@ long tv_usec; microseconds  */
     
             if(comm[0] == "cd") exit(0);
 
-            execvp(comm[0].c_str(), args);
+            execvp(comm[0].c_str(), args); /* Семейство функций exec заменяет текущий образ процесса новым образом процесса. 
+            Функции, описанные на этой странице руководства, являются образом функции execve(2). 
+            Более детальную информацию о смене текущего процесса можно получить со страниц руководства, описывающих функции execve.
+Начальным параметром этих функций будет являться полное имя файла, который необходимо исполнить.
+
+Параметр const char *arg и аналогичные записи в функциях execl, execlp, и execle подразумевают параметры arg0, arg1, ..., argn.
+Все вместе они описывают один или нескольких указателей на строки, заканчивающиеся NULL, которые представляют собой список параметров, доступных исполняемой программе. 
+Первый параметр, по соглашению, должен указывать на имя, ассоциированное с файлом, который надо исполнить. Список параметров должен заканчиваться NULL.
+
+Функции execv и execvp предоставляют процессу массив указателей на строки, заканчивающиеся null. Эти строки являются списком параметров, доступных новой программе. 
+Первый аргумент, по соглашению, должен указать на имя, ассоциированное с файлом, который необходимо исполнить. Массив указателей должен заканчиваться NULL.*/
             perror(comm[0].c_str());
             for(int i = 0; i < comm.size(); i++) delete [] args[i];
             delete [] args;
@@ -156,7 +166,11 @@ long tv_usec; microseconds  */
         return 0;
     }
     
-    int runConv(list<vector<string>> & conv) {
+    int runConv(list<vector<string>> & conv) { /*
+    conv — Опция служит чтобы преобразовать файл в соответствии с разделенными запятыми списком символов. 
+    Каждый символ может быть одним из следующих и представляет определенный тип преобразования: ascii, ebcdic, ibm, block, unblock, lcase, nocreat, excl, notrunc, 
+    ucase, swab, noerror, sync, fdatasync, fsync. 
+    Описание данных типов, будет ниже.*/
         vector<string> in_out = *(conv.begin());
         int in = 0, out = 1;
 
@@ -194,7 +208,9 @@ long tv_usec; microseconds  */
         timer.time_start(); 
 
         if(conv.size() == 2) {
-            auto it = conv.begin();
+            auto it = conv.begin();/*вектор :: begin ()
+Функция begin () используется для возврата итератора, указывающего на первый элемент векторного контейнера. 
+Функция begin () возвращает двунаправленный итератор к первому элементу контейнера.*/
             it++;
             execCommand(*it, in, out, conv.size(), fd);
         } else {
@@ -218,12 +234,12 @@ long tv_usec; microseconds  */
         delete [] fd;
 
         int code;
-        while(wait(&code) > 0); 
+        while(wait(&code) > 0); /* :) */
 
         return 0;
     }
 
-    int nextDepth(vector<string> & path, int dep, string name, vector<string> & res) {
+    int nextDepth(vector<string> & path, int dep, string name, vector<string> & res) { /* Для передвижения по фйловой системе */
         if(!(dep < path.size())) {
             res.push_back(name);
             return 1;
